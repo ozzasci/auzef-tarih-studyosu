@@ -1175,31 +1175,203 @@
       statusEl.textContent = `✓ ${cObj.name} (${unit}. Ünite) özeti kaydedildi!`;
     });
 
-    /* JSON SORU İMPORT (EKSİLTME YAPMADAN) */
-    function parseFlexibleJson(raw) {
-      const data = JSON.parse(raw);
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray(data.questions)) return data.questions;
-      if (data && Array.isArray(data.items)) return data.items;
-      throw new Error("Geçerli bir soru dizisi bulunamadı.");
+    /* EVRENSEL JSON SORU & KART ÇÖZÜMLEYİCİ (TÜM ŞEMALARI EKSİLTMEYECEK ŞEKİLDE DESTEKLER) */
+    function inferCourseIdFromMeta(dersAdi, rawCid, fallbackCid) {
+      const txt = `${dersAdi || ""} ${rawCid || ""}`.toLocaleLowerCase("tr-TR");
+      if (txt.includes("diplomasi") || txt.includes("osmdip")) return "osmanli_diplomasi";
+      if (txt.includes("sömürgecilik") || txt.includes("somurgecilik")) return "somurgecilik_tarihi";
+      if (txt.includes("gayrimüslim") || txt.includes("gayrimuslim")) return "gayrimuslimler_20yy";
+      if (txt.includes("iktisat")) return "osmanli_iktisat";
+      if (txt.includes("teşkilat") || txt.includes("teskilat") || txt.includes("kültür")) return "osmanli_teskilat_kultur";
+      if (txt.includes("1789") || txt.includes("1908")) return "osmanli_1789_1908";
+      if (txt.includes("dünya savaşı") || txt.includes("1914")) return "birinci_dunya_savasi";
+      if (txt.includes("meşrutiyet")) return "ikinci_mesrutiyet";
+      if (txt.includes("sosyal")) return "osmanli_sosyal_tarihi";
+      if (txt.includes("demokrasi")) return "turk_demokrasi_tarihi";
+      if (txt.includes("dış politika") || txt.includes("dis politika")) return "turk_dis_politikasi";
+      if (txt.includes("cumhuriyet")) return "tc_tarihi";
+      return fallbackCid;
     }
 
-    function appendQuestionsWithoutDropping(incoming, targetCourseId) {
+    function inferUnitFromItem(item, fallbackUnit = 1) {
+      if (!item || typeof item !== "object") return fallbackUnit;
+      if (item.unite_no !== undefined && item.unite_no !== null && item.unite_no !== "") {
+        const n = Number(item.unite_no);
+        if (!Number.isNaN(n) && n > 0) return n;
+      }
+      if (item.unit !== undefined && item.unit !== null && typeof item.unit !== "object") {
+        const n = Number(item.unit);
+        if (!Number.isNaN(n) && n > 0) return n;
+      }
+      if (item.bolum) {
+        const m = String(item.bolum).match(/(\d+)/);
+        if (m) return Number(m[1]);
+      }
+      return fallbackUnit;
+    }
+
+    function parseFlexibleJsonPayload(raw, targetCourseId) {
+      const data = JSON.parse(raw);
+      let rawItems = [];
+      let defaultUnit = 1;
+      let dictCourseId = targetCourseId;
+      let importedFlashcards = 0;
+
+      if (Array.isArray(data)) {
+        rawItems = data;
+      } else if (data && typeof data === "object") {
+        if (data.unit && typeof data.unit === "object" && data.unit.num) {
+          defaultUnit = Number(data.unit.num) || 1;
+        } else if (data.unit && typeof data.unit !== "object") {
+          defaultUnit = Number(data.unit) || 1;
+        }
+        dictCourseId = inferCourseIdFromMeta(data.ders_adi, data.courseId || data.ders_kodu, targetCourseId);
+
+        if (Array.isArray(data.flashcards)) {
+          data.flashcards.forEach((fc, i) => {
+            if (!fc || (!fc.term && !fc.question)) return;
+            const qStr = fc.question || fc.term;
+            const aStr = fc.answer || fc.def || "";
+            if (!reviewQueue.some((r) => r.question === qStr)) {
+              reviewQueue.push({
+                id: `fc_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 6)}`,
+                courseId: dictCourseId,
+                unit: defaultUnit,
+                question: String(qStr),
+                options: [String(aStr)],
+                answer: String(aStr),
+                explanation: String(aStr)
+              });
+              importedFlashcards++;
+            }
+          });
+          if (importedFlashcards > 0) saveReviewToStorage();
+        }
+
+        if (Array.isArray(data.sorular)) {
+          rawItems = data.sorular.map((x) => ({ ...(x || {}), _cid: dictCourseId, _unit: inferUnitFromItem(x, defaultUnit) }));
+        } else if (Array.isArray(data.questions)) {
+          rawItems = data.questions.map((x) => ({ ...(x || {}), _cid: dictCourseId, _unit: inferUnitFromItem(x, defaultUnit) }));
+        } else if (Array.isArray(data.items)) {
+          rawItems = data.items.map((x) => ({ ...(x || {}), _cid: dictCourseId, _unit: inferUnitFromItem(x, defaultUnit) }));
+        } else if (importedFlashcards > 0) {
+          return { questions: [], flashcardsAdded: importedFlashcards };
+        } else {
+          throw new Error("Desteklenen soru yapısı ('sorular', 'questions', 'items' veya soru dizisi) bulunamadı.");
+        }
+      } else {
+        throw new Error("Geçersiz JSON formatı.");
+      }
+
+      const normalized = [];
+      rawItems.forEach((rawItem, idx) => {
+        if (!rawItem || typeof rawItem !== "object") return;
+        const qText = String(rawItem.soru_metni || rawItem.soru || rawItem.q || rawItem.question || "").trim();
+        if (!qText) return;
+
+        const opts = [];
+        const letterMap = {};
+
+        if (rawItem.siklar && typeof rawItem.siklar === "object" && !Array.isArray(rawItem.siklar)) {
+          ["A", "B", "C", "D", "E"].forEach((k) => {
+            if (rawItem.siklar[k] !== undefined && rawItem.siklar[k] !== null) {
+              const val = String(rawItem.siklar[k]).trim();
+              letterMap[k] = val;
+              opts.push(val);
+            }
+          });
+          Object.keys(rawItem.siklar).forEach((k) => {
+            if (!letterMap[k.toUpperCase()] && rawItem.siklar[k] !== undefined && rawItem.siklar[k] !== null) {
+              const val = String(rawItem.siklar[k]).trim();
+              letterMap[k.toUpperCase()] = val;
+              opts.push(val);
+            }
+          });
+        } else if (Array.isArray(rawItem.options)) {
+          const letters = ["A", "B", "C", "D", "E"];
+          rawItem.options.forEach((v, iOpt) => {
+            if (v !== undefined && v !== null) {
+              const val = String(v).trim();
+              opts.push(val);
+              if (iOpt < letters.length) letterMap[letters[iOpt]] = val;
+            }
+          });
+        } else if (Array.isArray(rawItem.secenekler)) {
+          const letters = ["A", "B", "C", "D", "E"];
+          rawItem.secenekler.forEach((v, iOpt) => {
+            if (v !== undefined && v !== null) {
+              const val = String(v).trim();
+              opts.push(val);
+              if (iOpt < letters.length) letterMap[letters[iOpt]] = val;
+            }
+          });
+        } else {
+          ["a", "b", "c", "d", "e"].forEach((ch) => {
+            const key = "secenek_" + ch;
+            if (rawItem[key] !== undefined && rawItem[key] !== null) {
+              const val = String(rawItem[key]).trim();
+              letterMap[ch.toUpperCase()] = val;
+              opts.push(val);
+            }
+          });
+        }
+
+        if (!opts.length) opts.push("A", "B", "C", "D");
+
+        const rawAns = rawItem.dogru_cevap !== undefined && rawItem.dogru_cevap !== null
+          ? rawItem.dogru_cevap
+          : (rawItem.cevap !== undefined && rawItem.cevap !== null ? rawItem.cevap : rawItem.answer);
+
+        let ansText = "";
+        if (typeof rawAns === "number") {
+          ansText = (rawAns >= 0 && rawAns < opts.length) ? opts[rawAns] : (opts[0] || "");
+        } else if (typeof rawAns === "string") {
+          const sClean = rawAns.trim();
+          const up = sClean.toUpperCase();
+          if (letterMap[up]) ansText = letterMap[up];
+          else if (opts.includes(sClean)) ansText = sClean;
+          else ansText = sClean || opts[0] || "";
+        } else {
+          ansText = opts[0] || "";
+        }
+
+        let expStr = String(rawItem.aciklama || rawItem.explanation || "").trim();
+        const genericLabels = ["geçmiş yıl çıkmış soru çözüm havuzu", "anki aktarımı", "notebooklm aktarımı"];
+        if (!expStr || genericLabels.includes(expStr.toLocaleLowerCase("tr-TR"))) {
+          const noteStr = String(rawItem.kullanici_notu || "").trim();
+          expStr = noteStr ? noteStr : `Doğru yanıt: ${ansText}.`;
+        }
+
+        const resolvedCid = rawItem._cid || inferCourseIdFromMeta(rawItem.ders_adi, rawItem.courseId, targetCourseId);
+        const resolvedUnit = rawItem._unit || inferUnitFromItem(rawItem, defaultUnit);
+
+        normalized.push({
+          id: String(rawItem.id || `imp_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 6)}`),
+          courseId: resolvedCid,
+          unit: resolvedUnit,
+          question: qText,
+          options: opts,
+          answer: ansText,
+          explanation: expStr
+        });
+      });
+
+      return { questions: normalized, flashcardsAdded: importedFlashcards };
+    }
+
+    function appendQuestionsWithoutDropping(parsedObj, targetCourseId) {
+      const incoming = Array.isArray(parsedObj) ? parsedObj : (parsedObj.questions || []);
       let added = 0;
-      incoming.forEach((rawItem, idx) => {
-        if (!rawItem || (!rawItem.question && !rawItem.soru)) return;
-        const opts = Array.isArray(rawItem.options) && rawItem.options.length
-          ? rawItem.options
-          : (Array.isArray(rawItem.secenekler) ? rawItem.secenekler : ["A", "B", "C", "D"]);
-        const ans = rawItem.answer || rawItem.dogru || opts[0] || "";
+      incoming.forEach((qItem) => {
+        if (!qItem || !qItem.question) return;
         questionsBank.push({
-          id: rawItem.id || `imp_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 6)}`,
-          courseId: rawItem.courseId || targetCourseId,
-          unit: Number(rawItem.unit || rawItem.unite || 1),
-          question: String(rawItem.question || rawItem.soru),
-          options: opts.map(String),
-          answer: String(ans),
-          explanation: String(rawItem.explanation || rawItem.aciklama || "")
+          id: qItem.id || `imp_${Date.now()}_${added}_${Math.random().toString(36).slice(2, 6)}`,
+          courseId: qItem.courseId || targetCourseId,
+          unit: Number(qItem.unit || 1),
+          question: String(qItem.question),
+          options: Array.isArray(qItem.options) && qItem.options.length ? qItem.options.map(String) : ["A", "B", "C", "D"],
+          answer: String(qItem.answer || ""),
+          explanation: String(qItem.explanation || "")
         });
         added++;
       });
@@ -1222,10 +1394,11 @@
       const statusEl = document.getElementById("jsonImportStatus");
       const targetCid = document.getElementById("jsonTargetCourseSelect").value;
       try {
-        const items = parseFlexibleJson(document.getElementById("jsonPasteArea").value);
-        const added = appendQuestionsWithoutDropping(items, targetCid);
+        const parsed = parseFlexibleJsonPayload(document.getElementById("jsonPasteArea").value, targetCid);
+        const added = appendQuestionsWithoutDropping(parsed, targetCid);
+        const fcExtra = parsed.flashcardsAdded ? ` (+${parsed.flashcardsAdded} tekrar kartı eklendi)` : "";
         statusEl.style.color = "var(--success)";
-        statusEl.textContent = `✓ ${added} soru eksiksiz eklendi! Toplam soru: ${questionsBank.length}.`;
+        statusEl.textContent = `✓ ${added} soru eksiksiz eklendi${fcExtra}! Toplam soru: ${questionsBank.length}.`;
       } catch (err) {
         statusEl.style.color = "var(--danger)";
         statusEl.textContent = "JSON okunamadı: " + err.message;
