@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#1b2d45" />
+  <meta name="description" content="AUZEF Tarih 4. Sınıf Çalışma Stüdyosu — 12 Ders, Ünite Notları, JSON Soru Bankası İçe Aktarım, Akıllı Açıklama ve Tekrar Modu | Oğuz Bulut" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="AUZEF Tarih" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+
+  <title>AUZEF Tarih 4. Sınıf Çalışma Stüdyosu | Oğuz Bulut</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-marble: #f7f1e3;
+      --bg-ivory: #fffdf7;
+      --bg-warm: #efe4ce;
+      --slate: #1b2d45;
+      --slate-dark: #101c2c;
+      --crimson: #9b1c26;
+      --gold: #b8860b;
+      --gold-light: #d4a017;
+      --gold-dim: rgba(184, 134, 11, 0.34);
+      --text-main: #1f1916;
+      --text-muted: #5c4e46;
+      --danger: #b91c1c;
+      --success: #15803d;
+      --font-display: 'Cinzel', serif;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --radius: 14px;
+      --shadow: 0 8px 24px rgba(16, 28, 44, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(255, 253, 247, 0.96) 0%, transparent 55%),
+        radial-gradient(circle at bottom right, rgba(224, 210, 182, 0.65) 0%, transparent 60%),
+        linear-gradient(180deg, #fbf7ee 0%, var(--bg-marble) 55%, #ece0c7 100%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--slate-dark) 0%, var(--slate) 60%, #233b5b 100%);
+      color: #fffdf7;
+      border-bottom: 3px solid var(--gold-light);
+      box-shadow: 0 6px 20px rgba(16, 28, 44, 0.22);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 0.85rem 1.25rem;
+    }
+
+    .header-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-emblem {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fffdf7, #f2e5c9);
+      border: 2px solid var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--slate-dark);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: #fff9eb;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.76rem;
+      color: #f4e6c7;
+    }
+
+    .brand-text p strong { color: #ffe082; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      border: 1px solid rgba(27, 45, 69, 0.24);
+      background: var(--bg-ivory);
+      color: var(--text-main);
+      padding: 0.48rem 0.85rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    header .btn {
+      background: rgba(255, 253, 247, 0.14);
+      border-color: rgba(255, 224, 130, 0.55);
+      color: #fffdf7;
+    }
+
+    header .btn:hover {
+      background: rgba(255, 253, 247, 0.24);
+      border-color: #ffe082;
+    }
+
+    .btn:hover {
+      border-color: var(--slate);
+      background: var(--bg-warm);
+      transform: translateY(-1px);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #c99416, #a37308);
+      color: #ffffff;
+      border-color: #e5b842;
+      font-weight: 700;
+    }
+
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #d8a320, #b3800c);
+      color: #ffffff;
+    }
+
+    header .btn-gold {
+      background: #ffe082;
+      color: var(--slate-dark);
+      border-color: #fff3c4;
+      font-weight: 700;
+    }
+
+    .user-badge {
+      background: rgba(255, 253, 247, 0.16);
+      border: 1px solid rgba(255, 224, 130, 0.6);
+      color: #fffdf7;
+      padding: 0.35rem 0.78rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+    }
+
+    .user-badge .rank-pill {
+      background: #ffe082;
+      color: var(--slate-dark);
+      font-weight: 700;
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+    }
+
+    .nav-wrap {
+      max-width: 1260px;
+      margin: 1rem auto 0;
+      padding: 0 1rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      padding-bottom: 0.35rem;
+      scrollbar-width: thin;
+    }
+
+    .tab-btn {
+      background: var(--bg-ivory);
+      border: 1px solid rgba(27, 45, 69, 0.2);
+      color: var(--text-muted);
+      padding: 0.62rem 1rem;
+      border-radius: 11px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--slate);
+      border-color: var(--slate);
+      background: #fff9ec;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--slate), var(--slate-dark));
+      border-color: var(--gold-light);
+      color: #fffdf7;
+      box-shadow: 0 4px 12px rgba(27, 45, 69, 0.22);
+    }
+
+    main {
+      max-width: 1260px;
+      margin: 1rem auto 3rem;
+      padding: 0 1rem;
+    }
+
+    .panel { display: none; animation: fadeIn 0.25s ease; }
+    .panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-ivory);
+      border: 1px solid var(--gold-dim);
+      border-top: 3px solid var(--slate);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.15rem;
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(184, 134, 11, 0.22);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.06rem;
+      color: var(--slate);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      background: #f4e6c7;
+      color: var(--slate);
+      border: 1px solid rgba(184, 134, 11, 0.45);
+      padding: 0.24rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .pill {
+      background: var(--bg-warm);
+      border: 1px solid rgba(27, 45, 69, 0.2);
+      color: var(--text-muted);
+      padding: 0.36rem 0.76rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .pill.active, .pill:hover {
+      border-color: var(--slate);
+      color: #fffdf7;
+      background: var(--slate);
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .course-card {
+      background: linear-gradient(180deg, #fffdf9 0%, #f6ede0 100%);
+      border: 1px solid rgba(184, 134, 11, 0.35);
+      border-left: 4px solid var(--slate);
+      border-radius: 12px;
+      padding: 0.95rem 1.05rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .course-card:hover {
+      border-color: var(--crimson);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(27, 45, 69, 0.12);
+    }
+
+    .course-card.selected-course {
+      border-color: var(--crimson);
+      border-left-color: var(--crimson);
+      background: linear-gradient(180deg, #fffaf0 0%, #f3e3c6 100%);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 860px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    textarea, input[type="text"], input[type="password"], input[type="number"], select {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid rgba(27, 45, 69, 0.24);
+      color: var(--text-main);
+      border-radius: 10px;
+      padding: 0.68rem 0.88rem;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--slate);
+      box-shadow: 0 0 0 3px rgba(27, 45, 69, 0.08);
+    }
+
+    .q-box {
+      background: #faf3e5;
+      border: 1.5px solid var(--gold);
+      border-radius: 12px;
+      padding: 1.05rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      background: #ffffff;
+      border: 1.5px solid rgba(27, 45, 69, 0.22);
+      color: var(--text-main);
+      padding: 0.72rem 0.95rem;
+      border-radius: 10px;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: all 0.16s;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--slate);
+      background: #f8f0df;
+    }
+
+    .opt-btn.correct {
+      border-color: var(--success);
+      background: #dcfce7;
+      color: #14532d;
+      font-weight: 700;
+    }
+
+    .opt-btn.wrong {
+      border-color: var(--danger);
+      background: #fee2e2;
+      color: #7f1d1d;
+    }
+
+    .ai-explain-box {
+      background: #fffdf8;
+      border: 1px solid rgba(27, 45, 69, 0.25);
+      border-left: 4px solid var(--crimson);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-top: 0.65rem;
+      font-size: 0.86rem;
+    }
+
+    .flashcard {
+      background: linear-gradient(135deg, #fffdf8, #f4e7cd);
+      border: 2px solid var(--gold);
+      border-radius: 14px;
+      padding: 1.25rem;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.75rem;
+      border-radius: 9px;
+      background: #faf3e6;
+      margin-bottom: 0.45rem;
+      border: 1px solid rgba(184, 134, 11, 0.25);
+      font-size: 0.84rem;
+    }
+
+    .lb-row.top-1 {
+      border-color: var(--gold);
+      background: #f7e6c2;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 28, 44, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .gate-box {
+      background: linear-gradient(180deg, #fffdf7 0%, #f5ead6 100%);
+      border: 2.5px solid var(--slate);
+      border-radius: 18px;
+      max-width: 430px;
+      width: 100%;
+      padding: 1.5rem;
+      box-shadow: 0 24px 60px rgba(16, 28, 44, 0.35);
+    }
+
+    .gate-box h2 {
+      font-family: var(--font-display);
+      color: var(--slate);
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .form-group { margin-bottom: 0.75rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    footer {
+      border-top: 3px solid var(--gold-light);
+      background: linear-gradient(135deg, var(--slate-dark) 0%, var(--slate) 100%);
+      padding: 1.4rem 1rem;
+      text-align: center;
+      font-size: 0.82rem;
+      color: #f4e6c7;
+    }
+
+    .footer-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .copyright-line {
+      color: #ffe082;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-emblem">AUZEF</div>
+        <div class="brand-text">
+          <h1>AUZEF Tarih 4. Sınıf Çalışma Stüdyosu</h1>
+          <p>Hazırlayan: <strong>Oğuz Bulut</strong> · Güz &amp; Bahar Dönemi (12 Ders), JSON Soru Bankası &amp; Akıllı Tekrar</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn" id="openInstallBtn" type="button">📲 Telefona Yükle</button>
+        <a class="btn" id="headerContactBtn" href="https://wa.me/905309082276?text=Selam%20O%C4%9Fuz%20Bey%2C%20AUZEF%20Tarih%20%C3%87al%C4%B1%C5%9Fma%20St%C3%BCdyosu%20hakk%C4%B1nda%20yaz%C4%B1yorum." target="_blank" rel="noopener">
+          <span>Yalabaç · İleti Gönder</span>
+        </a>
+        <div class="user-badge" id="userBadgeBtn" title="Hesap ve Rütbe">
+          <span id="headerUserName">Tarih Talebesi</span>
+          <span class="rank-pill" id="headerUserRank">Talebe (0 P)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="nav-wrap">
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="tab-dersler">🏛 4. Sınıf Dersler &amp; Üniteler (12)</button>
+      <button class="tab-btn" data-tab="tab-sinav">📝 Soru Bankası &amp; Akıllı Sınav</button>
+      <button class="tab-btn" data-tab="tab-json">📥 JSON Soru İçe Aktar (Eksiksiz)</button>
+      <button class="tab-btn" data-tab="tab-tekrar">🃏 Hatalı Sorular &amp; Tekrar Kartları</button>
+    </nav>
+  </div>
+
+  <main>
+    <!-- 1. DERSLER VE ÜNİTE NOTLARI -->
+    <section class="panel active" id="tab-dersler">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🏛 4. Sınıf Müfredatı — Güz ve Bahar Dönemi Dersleri</h2>
+          <div class="filter-row" style="margin:0;" id="termFilterRow">
+            <button type="button" class="pill active" data-term="ALL">Tüm Dersler (12)</button>
+            <button type="button" class="pill" data-term="GUZ">Güz Dönemi (6)</button>
+            <button type="button" class="pill" data-term="BAHAR">Bahar Dönemi (6)</button>
+          </div>
+        </div>
+
+        <div class="course-grid" id="coursesGrid"></div>
+      </div>
+
+      <div class="card" id="unitStudyCard">
+        <div class="card-header">
+          <h2 class="card-title" id="activeCourseHeading">Seçili Ders Ünite Özeti &amp; Kavramlar</h2>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+            <select id="unitSelect" style="width:auto;min-width:220px;"></select>
+            <button type="button" class="btn btn-gold" id="jumpToCourseQuizBtn">Bu Dersten Test Başlat →</button>
+          </div>
+        </div>
+        <div id="unitContentArea"></div>
+      </div>
+    </section>
+
+    <!-- 2. SORU BANKASI & AKILLI SINAV -->
+    <section class="panel" id="tab-sinav">
+      <div class="quiz-grid">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">📝 Sınav &amp; Akıllı Gerekçe Laboratuvarı</h2>
+            <span class="badge" id="examStatsBadge">Puan: 0 · Doğru: 0/0</span>
+          </div>
+
+          <div class="two-col" style="margin-bottom:0.75rem;">
+            <div>
+              <label style="font-size:0.76rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:0.2rem;">Ders Seçimi:</label>
+              <select id="examCourseSelect"></select>
+            </div>
+            <div>
+              <label style="font-size:0.76rem;color:var(--text-muted);font-weight:600;display:block;margin-bottom:0.2rem;">Soru Sayısı / Mod:</label>
+              <div style="display:flex;gap:0.4rem;">
+                <select id="examCountSelect">
+                  <option value="ALL">Tüm Sorular (Eksiksiz)</option>
+                  <option value="10">10 Soru</option>
+                  <option value="20">20 Soru</option>
+                  <option value="5">5 Soru (Hızlı)</option>
+                </select>
+                <button type="button" class="btn btn-gold" id="startExamBtn" style="white-space:nowrap;">Başlat</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="examQuestionArea"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">🏆 Canlı Liderlik &amp; İlerleme</h2>
+            <span id="dbStatusBadge" style="font-size:0.76rem;font-weight:700;color:var(--success);">● Bulut Bağlı</span>
+          </div>
+          <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem;">
+            Çözülen sorular puan ve rütbe kazandırır; yanlış yapılan sorular otomatik <strong>Tekrar Kartları</strong>na eklenir.
+          </p>
+          <div id="leaderboardList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. JSON SORU BANKASI İÇE AKTARMA (HİÇBİR SORU AZALTILMADAN) -->
+    <section class="panel" id="tab-json">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">📥 JSON Soru Bankası İçe Aktar (Tüm Sorular Korunur)</h2>
+          <span class="badge" id="bankTotalBadge">0 Soru Yüklü</span>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">
+          Dışarıdan yüklediğiniz veya yapıştırdığınız JSON soru bankasındaki <strong>tüm sorular eksiksiz</strong> olarak seçili derse eklenir; soru sayısı kesinlikle azaltılmaz.
+        </p>
+
+        <div class="two-col" style="margin-bottom:0.75rem;">
+          <div>
+            <label style="font-size:0.78rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:0.25rem;">Hedef Ders:</label>
+            <select id="jsonTargetCourseSelect"></select>
+          </div>
+          <div>
+            <label style="font-size:0.78rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:0.25rem;">JSON Dosyası Seç (.json):</label>
+            <input type="file" id="jsonFileInput" accept=".json,application/json" style="padding:0.45rem;" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="jsonPasteArea">Veya JSON Dizisi / Nesnesi Yapıştırın:</label>
+          <textarea id="jsonPasteArea" rows="6" placeholder='[{"question":"...","options":["A","B","C","D"],"answer":"A","unit":1,"explanation":"..."}]'></textarea>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+          <button type="button" class="btn btn-gold" id="importJsonBtn">✓ Tüm Soruları Eksiksiz Aktar</button>
+          <button type="button" class="btn" id="loadSampleJsonBtn">Örnek Soru Ekle</button>
+          <span id="jsonImportStatus" style="font-size:0.84rem;font-weight:600;color:var(--success);"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. HATALI SORULAR & TEKRAR KARTLARI -->
+    <section class="panel" id="tab-tekrar">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">🃏 Tekrar Kartları (Yanlış Yapılan &amp; Kaydedilen Sorular)</h2>
+          <span class="badge" id="reviewCountBadge">0 Kart</span>
+        </div>
+        <div id="flashcardArea"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="copyright-line">
+        © 2026 Oğuz Bulut — Tüm Hakları Saklıdır. İzinsiz kopyalanamaz ve çoğaltılamaz.
+      </div>
+      <div>
+        İstanbul Üniversitesi AUZEF Tarih 4. Sınıf Müfredatı için hazırlanmış kişisel çalışma stüdyosu.
+      </div>
+      <div>
+        <a class="btn btn-gold" id="footerContactBtn" href="https://wa.me/905309082276?text=Selam%20O%C4%9Fuz%20Bey%2C%20AUZEF%20Tarih%20%C3%87al%C4%B1%C5%9Fma%20St%C3%BCdyosu%20hakk%C4%B1nda%20yaz%C4%B1yorum." target="_blank" rel="noopener">
+          <span>Yalabaç · İleti Gönder</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Giriş Modalı -->
+  <div class="modal-backdrop open" id="authModal">
+    <div class="gate-box">
+      <div style="text-align:center;font-family:var(--font-display);font-size:1.05rem;color:var(--gold);margin-bottom:0.2rem;">
+        AUZEF TARİH STÜDYOSU
+      </div>
+      <h2>Giriş Kapısı</h2>
+      <p style="text-align:center;font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">
+        Puanlarınızı ve ilerlemenizi bulutta saklamak için giriş yapın veya konuk olarak devam edin.
+      </p>
+      <div class="form-group">
+        <label for="authRumuz">Rumuz</label>
+        <input type="text" id="authRumuz" placeholder="Örn: Oğuz" maxlength="24" />
+      </div>
+      <div class="form-group">
+        <label for="authPin">Parola / PIN</label>
+        <input type="password" id="authPin" placeholder="En az 4 karakter" maxlength="24" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.75rem;">
+        <button type="button" class="btn btn-gold" id="loginRumuzBtn" style="justify-content:center;">Giriş Yap</button>
+        <button type="button" class="btn" id="registerRumuzBtn" style="justify-content:center;">Yeni Kayıt Ol</button>
+      </div>
+      <div style="margin-top:0.6rem;display:flex;flex-direction:column;gap:0.45rem;">
+        <button type="button" class="btn" id="googleLoginBtn" style="justify-content:center;background:var(--slate);color:#fffdf7;">
+          🌐 Google Hesabı ile Giriş Yap
+        </button>
+        <button type="button" class="btn" id="guestLoginBtn" style="justify-content:center;color:var(--text-muted);">
+          Konuk Olarak Devam Et →
+        </button>
+      </div>
+      <div id="authMsg" style="font-size:0.8rem;margin-top:0.5rem;text-align:center;font-weight:600;"></div>
+    </div>
+  </div>
+
+  <!-- PWA Kurulum Modalı -->
+  <div class="modal-backdrop" id="installModal">
+    <div class="gate-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.7rem;">
+        <strong style="font-family:var(--font-display);color:var(--slate);font-size:1.05rem;">📲 Telefona Yükle</strong>
+        <button type="button" class="btn" id="closeInstallBtn" style="padding:0.25rem 0.6rem;">✕</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.8rem;background:#fffdf9;padding:0.75rem;border-radius:12px;border:1px solid var(--gold-dim);margin-bottom:0.8rem;">
+        <img src="icon-192.png" alt="Simge" style="width:54px;height:54px;border-radius:12px;border:1px solid var(--gold);" />
+        <div>
+          <strong style="color:var(--slate);display:block;">AUZEF Tarih Stüdyosu</strong>
+          <span style="font-size:0.78rem;color:var(--text-muted);">Ana ekrana simge olarak eklenir.</span>
+        </div>
+      </div>
+      <button type="button" class="btn btn-gold" id="nativeInstallBtn" style="width:100%;justify-content:center;margin-bottom:0.7rem;display:none;">
+        ⚡ Tek Dokunuşla Ana Ekrana Yükle
+      </button>
+      <div style="font-size:0.82rem;color:var(--text-main);display:flex;flex-direction:column;gap:0.55rem;">
+        <div style="background:#fffdf9;padding:0.65rem;border-radius:9px;border:1px solid rgba(27,45,69,0.15);">
+          <strong style="color:var(--crimson);">🤖 Android (Chrome):</strong> Sağ üstteki <strong>⋮</strong> menüsünden <strong>"Uygulamayı yükle"</strong> veya <strong>"Ana ekrana ekle"</strong> deyin.
+        </div>
+        <div style="background:#fffdf9;padding:0.65rem;border-radius:9px;border:1px solid rgba(27,45,69,0.15);">
+          <strong style="color:var(--slate);">🍎 iPhone / iPad (Safari):</strong> Alttaki <strong>Paylaş</strong> simgesine dokunup <strong>"Ana Ekrana Ekle"</strong> deyin.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyC1b-9fvfKl7MEnith-SpFxRw-18ms8voI",
+      authDomain: "auzef-tarih-studyosu.firebaseapp.com",
+      databaseURL: "https://auzef-tarih-studyosu-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "auzef-tarih-studyosu",
+      storageBucket: "auzef-tarih-studyosu.firebasestorage.app",
+      messagingSenderId: "984516634464",
+      appId: "1:984516634464:web:4f1fc3ef6349864475a005"
+    };
+
+    const WHATSAPP_NO = "905309082276";
+
+    (function setupContactLinks() {
+      const msg = encodeURIComponent("Selam Oğuz Bey, AUZEF Tarih Çalışma Stüdyosu hakkında yazıyorum.");
+      const url = `https://wa.me/${WHATSAPP_NO}?text=${msg}`;
+      document.getElementById("headerContactBtn").href = url;
+      document.getElementById("footerContactBtn").href = url;
+    })();
+
+    /* 4. SINIF AUZEF TARİH MÜFREDATI (12 DERS: 6 GÜZ + 6 BAHAR) */
+    const COURSES_12 = [
+      { id: "osmanli_1789_1908", term: "GUZ", name: "OSMANLI TARİHİ (1789–1908)", desc: "III. Selim Nizam-ı Cedid'den II. Mahmud merkezileşmesine, Tanzimat ve Islahat'tan II. Abdülhamid dönemine siyasi ve ıslahat tarihi." },
+      { id: "osmanli_diplomasi", term: "GUZ", name: "OSMANLI DİPLOMASİ TARİHİ", desc: "Daimî elçiliklerin açılması, Şark Meselesi, denge politikası, Boğazlar statüsü ve büyük güçlerle diplomatik antlaşmalar." },
+      { id: "somurgecilik_tarihi", term: "GUZ", name: "SÖMÜRGECİLİK TARİHİ", desc: "Coğrafi keşiflerden merkantilizm ve sanayi sömürgeciliğine, Afrika'nın paylaşımı ve emperyal rekabet süreçleri." },
+      { id: "gayrimuslimler_20yy", term: "GUZ", name: "20. YÜZYIL TÜRKİYE’SİNDE GAYRİMÜSLİMLER VE KURUMLARI", desc: "Tanzimat ve Meşrutiyet'ten Cumhuriyet'e cemaat vakıfları, azınlık kurumları, mübadele ve hukuki statü dönüşümleri." },
+      { id: "osmanli_iktisat", term: "GUZ", name: "OSMANLI İKTİSAT TARİHİ", desc: "İaşe, fiskalizm ve gelenekçilik ilkeleri; tımar, iltizam, lonca düzeni, dış borçlanma ve Duyûn-ı Umûmiye süreci." },
+      { id: "osmanli_teskilat_kultur", term: "GUZ", name: "OSMANLI TEŞKİLAT VE KÜLTÜR TARİHİ", desc: "Divan-ı Hümayun, kalemiye-ilmiye-seyfiye sınıfları, taşra yönetimi, vakıflar ve klasik Osmanlı kültür hayatı." },
+      { id: "birinci_dunya_savasi", term: "BAHAR", name: "I. DÜNYA SAVAŞI TARİHİ (1914–1918)", desc: "İttifak ve İtilaf blokları, Osmanlı cepheleri (Çanakkale, Kafkas, Kanal, Irak, Filistin-Suriye), gizli antlaşmalar ve Mondros." },
+      { id: "ikinci_mesrutiyet", term: "BAHAR", name: "II. MEŞRUTİYET DÖNEMİ TARİHİ", desc: "1908 inkılabı, Kanun-ı Esasi düzenlemeleri, 31 Mart Vak'ası, İttihat ve Terakki, Balkan Savaşları ve fikrî akımlar." },
+      { id: "osmanli_sosyal_tarihi", term: "BAHAR", name: "OSMANLI SOSYAL TARİHİ", desc: "Şehir ve kır nüfusu, aile yapısı, gündelik yaşam, loncalar, vakıf sosyal yardımları ve toplumsal tabakalaşma." },
+      { id: "turk_demokrasi_tarihi", term: "BAHAR", name: "TÜRK DEMOKRASİ TARİHİ", desc: "Meşrutiyet parlamenter deneyimleri, çok partili hayata geçiş, anayasal gelişmeler, seçimler ve demokratik kurumlaşma." },
+      { id: "turk_dis_politikasi", term: "BAHAR", name: "TÜRK DİŞ POLİTİKASI", desc: "Millî Mücadele diplomasisinden Lozan'a, Cumhuriyet dönemi bölgesel paktlar, NATO üyeliği ve dış politika ilkeleri." },
+      { id: "tc_tarihi", term: "BAHAR", name: "TÜRKİYE CUMHURİYETİ TARİHİ", desc: "Millî Mücadele'nin teşkilatlanması, Cumhuriyet'in ilanı, Atatürk devrimleri, tek parti dönemi ve siyasal-toplumsal dönüşüm." }
+    ];
+
+    /* BAŞLANGIÇ SORU BANKASI (DERS BAZLI, EKSİLTİLMEDEN GENİŞLETİLEBİLİR) */
+    const DEFAULT_QUESTIONS = [
+      { id: "q1", courseId: "osmanli_1789_1908", unit: 1, question: "III. Selim döneminde Avrupa başkentlerinde açılan ilk daimî Osmanlı elçiliklerinin temel amacı nedir?", options: ["Avrupa devletlerinin iç politikasını ve diplomasiyi yerinde izlemek", "Sadece ticaret vergilerini toplamak", "Yeniçeri ocağını kaldırmak", "Kapitülasyonları tek taraflı iptal etmek"], answer: "Avrupa devletlerinin iç politikasını ve diplomasiyi yerinde izlemek", explanation: "III. Selim, Nizam-ı Cedid ıslahatları kapsamında dış dünyadaki gelişmeleri doğrudan takip etmek için Londra, Paris, Viyana ve Berlin'de daimî elçilikler açmıştır." },
+      { id: "q2", courseId: "osmanli_diplomasi", unit: 2, question: "XIX. yüzyılda Osmanlı Devleti'nin toprak bütünlüğünü büyük devletlerin rekabeti üzerinden korumaya çalıştığı yaklaşım nasıl adlandırılır?", options: ["Denge politikası", "İnziva politikası", "Serbest mübadele politikası", "Federasyon politikası"], answer: "Denge politikası", explanation: "Osmanlı diplomasisi, özellikle 1839–1878 arasında İngiltere, Fransa, Rusya ve Avusturya arasındaki çıkar çatışmalarından yararlanarak denge politikası izlemiştir." },
+      { id: "q3", courseId: "somurgecilik_tarihi", unit: 3, question: "1884–1885 Berlin Konferansı'nın sömürgecilik tarihindeki temel sonucu nedir?", options: ["Afrika kıtasının büyük güçler arasında nüfuz ve sömürge alanlarına bölünmesinin kurallaştırılması", "Tüm sömürgelere tam bağımsızlık verilmesi", "Köle ticaretinin başlatılması", "Süveyş Kanalı'nın kapatılması"], answer: "Afrika kıtasının büyük güçler arasında nüfuz ve sömürge alanlarına bölünmesinin kurallaştırılması", explanation: "Berlin Konferansı, Afrika'daki sömürge paylaşımını ve fiilî işgal (etkin hakimiyet) ilkesini düzenleyerek kıtanın paylaşımını hızlandırmıştır." },
+      { id: "q4", courseId: "gayrimuslimler_20yy", unit: 1, question: "1856 Islahat Fermanı'nın gayrimüslim cemaat kurumlarına getirdiği önemli düzenlemelerden biri nedir?", options: ["Cemaatlerin kendi mezhep işlerini ve meclislerini yeniden düzenleyebilmesi", "Tüm cemaat okullarının derhal kapatılması", "Cizye vergisinin iki katına çıkarılması", "Patrikhanelerin tüm yetkilerinin kaldırılması"], answer: "Cemaatlerin kendi mezhep işlerini ve meclislerini yeniden düzenleyebilmesi", explanation: "Islahat Fermanı ile gayrimüslim cemaatlerin kendi iç işlerini ve kurumlarını düzenlemelerine yönelik kapsamlı hükümler getirilmiştir." },
+      { id: "q5", courseId: "osmanli_iktisat", unit: 1, question: "Klasik Osmanlı iktisat düşüncesinin üç temel ilkesi hangileridir?", options: ["İaşecilik, fiskalizm, gelenekçilik", "Merkantilizm, korumacılık, sömürgecilik", "Laissez-faire, sanayileşme, tekelcilik", "Koltasyon, enflasyonizm, kamulaştırma"], answer: "İaşecilik, fiskalizm, gelenekçilik", explanation: "Osmanlı iktisat anlayışı halkın ve şehrin ihtiyacını karşılamayı (iaşecilik), hazine gelirlerini korumayı (fiskalizm) ve yerleşik düzeni sürdürmeyi (gelenekçilik) esas alır." },
+      { id: "q6", courseId: "osmanli_teskilat_kultur", unit: 1, question: "Klasik Osmanlı yönetiminde şer'i ve örfî hukuk ile eğitim-yargı teşkilatını temsil eden sınıf hangisidir?", options: ["İlmiye", "Seyfiye", "Kalemiye", "Ayan"], answer: "İlmiye", explanation: "Seyfiye askerî/yönetici, Kalemiye bürokrasi/yazışma ve maliye, İlmiye ise kadılık, müderrislik ve şeyhülislamlık gibi hukuk-eğitim görevlerini yürütürdü." },
+      { id: "q7", courseId: "birinci_dunya_savasi", unit: 2, question: "I. Dünya Savaşı'nda Osmanlı Devleti'nin taarruz nitelikli başlıca cepheleri hangileridir?", options: ["Kafkas Cephesi ve Kanal Cephesi", "Çanakkale Cephesi ve Galiçya Cephesi", "Romanya Cephesi ve Makedonya Cephesi", "Hicaz-Yemen Cephesi ve Trablusgarp"], answer: "Kafkas Cephesi ve Kanal Cephesi", explanation: "Osmanlı Devleti'nin savaştaki iki büyük taarruz cephesi Kafkas ve Kanal cepheleridir; Çanakkale ise savunma cephesidir." },
+      { id: "q8", courseId: "ikinci_mesrutiyet", unit: 1, question: "II. Meşrutiyet'in ilanıyla (1908) birlikte Kanun-ı Esasi'de yapılan 1909 değişikliklerinin öne çıkan özelliği nedir?", options: ["Padişahın yetkilerinin sınırlandırılması ve Meclis-i Mebusan'ın yetkilerinin artırılması", "Meclisin tamamen feshedilmesi", "Siyasi partilerin yasaklanması", "Basın özgürlüğünün kaldırılması"], answer: "Padişahın yetkilerinin sınırlandırılması ve Meclis-i Mebusan'ın yetkilerinin artırılması", explanation: "1909 Kanun-ı Esasi tadilatlarıyla hükümetin Meclis'e karşı sorumluluğu güçlendirilmiş ve padişahın mutlak yetkileri sınırlandırılmıştır." },
+      { id: "q9", courseId: "osmanli_sosyal_tarihi", unit: 1, question: "Osmanlı şehirlerinde sosyal dayanışma, yoksulluk yardımı ve kamusal hizmetlerin kurumsal dayanaklarından biri nedir?", options: ["Vakıf sistemi", "Derebeylik şatosu", "Kast sistemi", "Manorya düzeni"], answer: "Vakıf sistemi", explanation: "İmarethaneler, darüşşifalar, sebiller, köprüler ve eğitim kurumları büyük ölçüde vakıflar aracılığıyla işletilerek toplumsal dayanışmayı desteklemiştir." },
+      { id: "q10", courseId: "turk_demokrasi_tarihi", unit: 2, question: "Cumhuriyet döneminde çok partili hayata geçiş denemeleri kapsamında 1924'te kurulan ilk muhalefet partisi hangisidir?", options: ["Terakkiperver Cumhuriyet Fırkası", "Serbest Cumhuriyet Fırkası", "Demokrat Parti", "Millet Partisi"], answer: "Terakkiperver Cumhuriyet Fırkası", explanation: "17 Kasım 1924'te kurulan Terakkiperver Cumhuriyet Fırkası, Cumhuriyet döneminin ilk muhalefet partisidir." },
+      { id: "q11", courseId: "turk_dis_politikasi", unit: 1, question: "Lozan Barış Antlaşması (24 Temmuz 1923) ile çözüme kavuşturulan temel başlıklardan biri hangisidir?", options: ["Kapitülasyonların kaldırılması", "Hatay'ın kesin katılması", "NATO üyeliği", "Montrö Boğazlar Sözleşmesi'nin imzalanması"], answer: "Kapitülasyonların kaldırılması", explanation: "Lozan Antlaşması ile adlî ve malî kapitülasyonlar kaldırılmış ve Türkiye'nin bağımsızlığı uluslararası alanda tescillenmiştir." },
+      { id: "q12", courseId: "tc_tarihi", unit: 2, question: "3 Mart 1924'te kabul edilen kanunlar arasında yer almayan düzenleme hangisidir?", options: ["Harf İnkılabı ve Latin alfabesinin kabulü", "Hilafetin kaldırılması", "Tevhid-i Tedrisat Kanunu", "Şer'iye ve Evkaf Vekâletinin kaldırılması"], answer: "Harf İnkılabı ve Latin alfabesinin kabulü", explanation: "3 Mart 1924'te Hilafet, Tevhid-i Tedrisat ve Şer'iye-Evkaf yasaları çıkarılmış; Harf İnkılabı ise 1 Kasım 1928'de gerçekleştirilmiştir." }
+    ];
+
+    /* DURUM YÖNETİMİ */
+    let activeTerm = "ALL";
+    let selectedCourseId = COURSES_12[0].id;
+    let questionsBank = [];
+    let reviewQueue = [];
+    let currentExamList = [];
+    let examIndex = 0;
+    let examAnswered = false;
+    let sessionPoints = 0;
+    let sessionCorrect = 0;
+    let sessionTotal = 0;
+    let flashIndex = 0;
+    let flashFlipped = false;
+
+    function escapeHtml(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function loadStateFromStorage() {
+      try {
+        const rawBank = localStorage.getItem("auzef_tarih_bank_v1");
+        if (rawBank) {
+          const parsed = JSON.parse(rawBank);
+          if (Array.isArray(parsed) && parsed.length) questionsBank = parsed;
+        }
+      } catch (e) {}
+      if (!questionsBank.length) {
+        questionsBank = [...DEFAULT_QUESTIONS];
+        saveBankToStorage();
+      }
+
+      try {
+        const rawRev = localStorage.getItem("auzef_tarih_review_v1");
+        if (rawRev) reviewQueue = JSON.parse(rawRev) || [];
+      } catch (e) {}
+    }
+
+    function saveBankToStorage() {
+      try { localStorage.setItem("auzef_tarih_bank_v1", JSON.stringify(questionsBank)); } catch (e) {}
+      document.getElementById("bankTotalBadge").textContent = `${questionsBank.length} Soru Yüklü`;
+    }
+
+    function saveReviewToStorage() {
+      try { localStorage.setItem("auzef_tarih_review_v1", JSON.stringify(reviewQueue)); } catch (e) {}
+      document.getElementById("reviewCountBadge").textContent = `${reviewQueue.length} Kart`;
+    }
+
+    /* SEKMELER */
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+        if (btn.dataset.tab === "tab-tekrar") renderFlashcard();
+      });
+    });
+
+    /* DERSLER & ÜNİTELER */
+    function renderCoursesGrid() {
+      const list = activeTerm === "ALL" ? COURSES_12 : COURSES_12.filter((c) => c.term === activeTerm);
+      document.getElementById("coursesGrid").innerHTML = list.map((c) => {
+        const qCount = questionsBank.filter((q) => q.courseId === c.id).length;
+        const termLabel = c.term === "GUZ" ? "Güz Dönemi" : "Bahar Dönemi";
+        return `
+          <div class="course-card ${c.id === selectedCourseId ? "selected-course" : ""}" data-cid="${c.id}">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.35rem;">
+              <span class="badge">${termLabel}</span>
+              <span style="font-size:0.75rem;font-weight:700;color:var(--crimson);">${qCount} soru</span>
+            </div>
+            <strong style="font-family:var(--font-display);font-size:0.9rem;color:var(--slate);display:block;margin-bottom:0.25rem;">${escapeHtml(c.name)}</strong>
+            <div style="font-size:0.8rem;color:var(--text-muted);">${escapeHtml(c.desc)}</div>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".course-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          selectedCourseId = card.dataset.cid;
+          renderCoursesGrid();
+          renderCourseDetail();
+        });
+      });
+    }
+
+    function renderCourseDetail() {
+      const course = COURSES_12.find((c) => c.id === selectedCourseId) || COURSES_12[0];
+      document.getElementById("activeCourseHeading").textContent = `${course.name} — Ünite Çalışma Özeti`;
+      const uSel = document.getElementById("unitSelect");
+      uSel.innerHTML = Array.from({ length: 14 }, (_, idx) => `<option value="${idx + 1}">${idx + 1}. Ünite</option>`).join("");
+      renderUnitBox(course, Number(uSel.value || 1));
+    }
+
+    function renderUnitBox(course, unitNo) {
+      const relatedQs = questionsBank.filter((q) => q.courseId === course.id && Number(q.unit || 1) === unitNo);
+      const anyCourseQs = questionsBank.filter((q) => q.courseId === course.id);
+      const sampleList = relatedQs.length ? relatedQs : anyCourseQs;
+
+      document.getElementById("unitContentArea").innerHTML = `
+        <div class="q-box" style="margin-bottom:0.75rem;">
+          <strong style="color:var(--slate);display:block;margin-bottom:0.25rem;">${unitNo}. Ünite Odak Alanı (${escapeHtml(course.name)})</strong>
+          <p style="font-size:0.86rem;color:var(--text-main);">${escapeHtml(course.desc)} Bu ünitede kronolojik sıralama, kavram-kurum eşleştirmeleri ve neden-sonuç ilişkileri sınav sorularının temelini oluşturur.</p>
+        </div>
+        <div style="font-size:0.84rem;font-weight:700;color:var(--crimson);margin-bottom:0.4rem;">Bu Derse Ait Kayıtlı Sorular (${anyCourseQs.length} soru):</div>
+        ${sampleList.length ? sampleList.map((q) => `
+          <div class="lb-row" style="display:block;">
+            <strong style="color:var(--slate);display:block;margin-bottom:0.2rem;">[${q.unit || 1}. Ünite] ${escapeHtml(q.question)}</strong>
+            <div style="font-size:0.8rem;color:var(--success);font-weight:600;">Doğru Yanıt: ${escapeHtml(q.answer)}</div>
+          </div>
+        `).join("") : `<div style="font-size:0.83rem;color:var(--text-muted);">Bu ders için henüz soru eklenmemiş. "JSON Soru İçe Aktar" sekmesinden dilediğiniz kadar soru ekleyebilirsiniz.</div>`}
+      `;
+    }
+
+    document.getElementById("unitSelect").addEventListener("change", (e) => {
+      const course = COURSES_12.find((c) => c.id === selectedCourseId) || COURSES_12[0];
+      renderUnitBox(course, Number(e.target.value));
+    });
+
+    document.getElementById("termFilterRow").addEventListener("click", (e) => {
+      const p = e.target.closest(".pill");
+      if (!p) return;
+      document.querySelectorAll("#termFilterRow .pill").forEach((x) => x.classList.remove("active"));
+      p.classList.add("active");
+      activeTerm = p.dataset.term;
+      renderCoursesGrid();
+    });
+
+    document.getElementById("jumpToCourseQuizBtn").addEventListener("click", () => {
+      document.getElementById("examCourseSelect").value = selectedCourseId;
+      document.querySelector('[data-tab="tab-sinav"]').click();
+      startExamSession();
+    });
+
+    /* SINAV & AKILLI AÇIKLAMA */
+    function populateCourseSelects() {
+      const opts = `<option value="ALL">Tüm Dersler (${questionsBank.length} Soru)</option>` +
+        COURSES_12.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+      document.getElementById("examCourseSelect").innerHTML = opts;
+      document.getElementById("examCourseSelect").value = selectedCourseId;
+
+      document.getElementById("jsonTargetCourseSelect").innerHTML = COURSES_12
+        .map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+      document.getElementById("jsonTargetCourseSelect").value = selectedCourseId;
+    }
+
+    function startExamSession() {
+      const cid = document.getElementById("examCourseSelect").value;
+      const countMode = document.getElementById("examCountSelect").value;
+      let pool = cid === "ALL" ? [...questionsBank] : questionsBank.filter((q) => q.courseId === cid);
+      if (!pool.length) pool = [...questionsBank];
+
+      // Soru sayısı "ALL" seçildiğinde tüm sorular eksiksiz korunur
+      const ordered = [...pool].sort(() => Math.random() - 0.5);
+      currentExamList = countMode === "ALL" ? ordered : ordered.slice(0, Number(countMode));
+      examIndex = 0;
+      examAnswered = false;
+      renderExamQuestion();
+    }
+
+    function buildSmartExplanation(q, chosenOpt, isCorrect) {
+      const baseExp = q.explanation
+        ? q.explanation
+        : `"${q.answer}" seçeneği, "${q.question}" sorusunun tarihsel bağlamına ve dönem özelliklerine uygun tek doğru ifadedir.`;
+      if (isCorrect) {
+        return `<strong>Doğru Gerekçe:</strong> ${escapeHtml(baseExp)}`;
+      }
+      return `<strong>Neden "${escapeHtml(chosenOpt)}" elendi?</strong> Seçtiğiniz ifade soru kökündeki tarihsel ölçüt veya dönem özelliğiyle örtüşmemektedir. <strong>Doğru Yanıt (${escapeHtml(q.answer)}):</strong> ${escapeHtml(baseExp)}`;
+    }
+
+    function renderExamQuestion() {
+      const area = document.getElementById("examQuestionArea");
+      if (!currentExamList.length) {
+        area.innerHTML = `<div class="q-box">Soru bulunamadı.</div>`;
+        return;
+      }
+      if (examIndex >= currentExamList.length) {
+        area.innerHTML = `
+          <div class="q-box" style="text-align:center;">
+            <strong style="font-family:var(--font-display);color:var(--slate);font-size:1.1rem;display:block;margin-bottom:0.35rem;">Oturum Tamamlandı!</strong>
+            <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:0.75rem;">Bu oturumda ${currentExamList.length} soruyu tamamladınız.</p>
+            <button type="button" class="btn btn-gold" id="restartSamePoolBtn">Yeni Tur Başlat</button>
+          </div>
+        `;
+        document.getElementById("restartSamePoolBtn").addEventListener("click", startExamSession);
+        return;
+      }
+
+      const q = currentExamList[examIndex];
+      const cObj = COURSES_12.find((c) => c.id === q.courseId);
+      const opts = Array.isArray(q.options) && q.options.length ? q.options : [q.answer];
+      examAnswered = false;
+
+      area.innerHTML = `
+        <div class="q-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:0.4rem;margin-bottom:0.35rem;">
+            <span class="badge">${cObj ? escapeHtml(cObj.name) : "AUZEF Tarih"} · ${q.unit || 1}. Ünite</span>
+            <strong style="font-size:0.8rem;color:var(--crimson);">Soru ${examIndex + 1} / ${currentExamList.length}</strong>
+          </div>
+          <div style="font-size:0.96rem;font-weight:700;color:var(--slate-dark);">${escapeHtml(q.question)}</div>
+        </div>
+        <div id="examOpts">
+          ${opts.map((o) => `<button type="button" class="opt-btn" data-opt="${escapeHtml(o)}">${escapeHtml(o)}</button>`).join("")}
+        </div>
+        <div id="smartExplainSlot"></div>
+        <div style="margin-top:0.65rem;display:flex;justify-content:space-between;align-items:center;">
+          <button type="button" class="btn" id="saveToReviewBtn">🃏 Tekrar Kartına Ekle</button>
+          <button type="button" class="btn btn-gold" id="nextExamQBtn">Sonraki Soru →</button>
+        </div>
+      `;
+
+      document.getElementById("saveToReviewBtn").addEventListener("click", () => {
+        if (!reviewQueue.some((r) => r.question === q.question)) {
+          reviewQueue.push(q);
+          saveReviewToStorage();
+        }
+        document.getElementById("saveToReviewBtn").textContent = "✓ Kartlara Eklendi";
+      });
+
+      document.getElementById("nextExamQBtn").addEventListener("click", () => {
+        examIndex++;
+        renderExamQuestion();
+      });
+
+      area.querySelectorAll(".opt-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (examAnswered) return;
+          examAnswered = true;
+          const chosen = btn.dataset.opt;
+          const isCorrect = chosen === q.answer;
+          sessionTotal++;
+
+          area.querySelectorAll(".opt-btn").forEach((b) => {
+            b.disabled = true;
+            if (b.dataset.opt === q.answer) b.classList.add("correct");
+          });
+          if (!isCorrect) {
+            btn.classList.add("wrong");
+            if (!reviewQueue.some((r) => r.question === q.question)) {
+              reviewQueue.push(q);
+              saveReviewToStorage();
+            }
+          } else {
+            sessionCorrect++;
+            sessionPoints += 10;
+          }
+
+          document.getElementById("examStatsBadge").textContent = `Puan: ${sessionPoints} · Doğru: ${sessionCorrect}/${sessionTotal}`;
+          document.getElementById("smartExplainSlot").innerHTML = `
+            <div class="ai-explain-box">${buildSmartExplanation(q, chosen, isCorrect)}</div>
+          `;
+          syncScoreToCloud(isCorrect ? 10 : 0, isCorrect);
+        });
+      });
+    }
+
+    document.getElementById("startExamBtn").addEventListener("click", startExamSession);
+
+    /* JSON SORU İMPORT (HİÇBİR SORU AZALTILMADAN) */
+    function parseFlexibleJson(raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.questions)) return data.questions;
+      if (data && Array.isArray(data.items)) return data.items;
+      throw new Error("Geçerli bir soru dizisi bulunamadı.");
+    }
+
+    function appendQuestionsWithoutDropping(incoming, targetCourseId) {
+      let added = 0;
+      incoming.forEach((rawItem, idx) => {
+        if (!rawItem || !rawItem.question) return;
+        const opts = Array.isArray(rawItem.options) && rawItem.options.length
+          ? rawItem.options
+          : (Array.isArray(rawItem.secenekler) ? rawItem.secenekler : ["A", "B", "C", "D"]);
+        const ans = rawItem.answer || rawItem.dogru || opts[0] || "";
+        questionsBank.push({
+          id: rawItem.id || `imp_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 6)}`,
+          courseId: rawItem.courseId || targetCourseId,
+          unit: Number(rawItem.unit || rawItem.unite || 1),
+          question: String(rawItem.question || rawItem.soru),
+          options: opts.map(String),
+          answer: String(ans),
+          explanation: String(rawItem.explanation || rawItem.aciklama || "")
+        });
+        added++;
+      });
+      saveBankToStorage();
+      renderCoursesGrid();
+      renderCourseDetail();
+      populateCourseSelects();
+      return added;
+    }
+
+    document.getElementById("jsonFileInput").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById("jsonPasteArea").value = String(reader.result || "");
+      };
+      reader.readAsText(file, "utf-8");
+    });
+
+    document.getElementById("importJsonBtn").addEventListener("click", () => {
+      const statusEl = document.getElementById("jsonImportStatus");
+      const targetCid = document.getElementById("jsonTargetCourseSelect").value;
+      try {
+        const items = parseFlexibleJson(document.getElementById("jsonPasteArea").value);
+        const added = appendQuestionsWithoutDropping(items, targetCid);
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = `✓ ${added} soru eksiksiz eklendi! Toplam soru: ${questionsBank.length}.`;
+      } catch (err) {
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "JSON okunamadı: " + err.message;
+      }
+    });
+
+    document.getElementById("loadSampleJsonBtn").addEventListener("click", () => {
+      const sample = [
+        {
+          unit: 8,
+          question: "Sultan Abdülaziz döneminde Mısır Hidivliği statüsünde yapılan düzenlemeler hangi fermanlarla genişletilmiştir?",
+          options: ["1866 ve 1867 Mısır Fermanları", "1839 Gülhane Hattı", "1876 Kanun-ı Esasi", "1908 İkinci Meşrutiyet"],
+          answer: "1866 ve 1867 Mısır Fermanları",
+          explanation: "İsmail Paşa döneminde çıkarılan fermanlarla hidivlik veraseti ve unvanı genişletilmiştir."
+        }
+      ];
+      document.getElementById("jsonPasteArea").value = JSON.stringify(sample, null, 2);
+    });
+
+    /* TEKRAR KARTLARI */
+    function renderFlashcard() {
+      const area = document.getElementById("flashcardArea");
+      document.getElementById("reviewCountBadge").textContent = `${reviewQueue.length} Kart`;
+      if (!reviewQueue.length) {
+        area.innerHTML = `<div class="q-box">Şu an tekrar kartı listesinde soru yok. Sınavda yanlış yaptığınız veya eklediğiniz sorular buraya gelir.</div>`;
+        return;
+      }
+      if (flashIndex >= reviewQueue.length) flashIndex = 0;
+      const card = reviewQueue[flashIndex];
+      const cObj = COURSES_12.find((c) => c.id === card.courseId);
+
+      area.innerHTML = `
+        <div class="flashcard">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.45rem;">
+              <span class="badge">${cObj ? escapeHtml(cObj.name) : "AUZEF Tarih"}</span>
+              <span style="font-size:0.78rem;font-weight:700;color:var(--crimson);">Kart ${flashIndex + 1} / ${reviewQueue.length}</span>
+            </div>
+            <div style="font-size:1rem;font-weight:700;color:var(--slate-dark);">${escapeHtml(card.question)}</div>
+            ${flashFlipped ? `
+              <div class="ai-explain-box" style="margin-top:0.75rem;">
+                <div style="color:var(--success);font-weight:700;margin-bottom:0.2rem;">Doğru Yanıt: ${escapeHtml(card.answer)}</div>
+                <div>${escapeHtml(card.explanation || "Ünite notlarıyla birlikte tekrar ediniz.")}</div>
+              </div>
+            ` : ""}
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.9rem;">
+            <button type="button" class="btn btn-gold" id="flipCardBtn">${flashFlipped ? "Soruyu Göster" : "Yanıtı & Açıklamayı Göster"}</button>
+            <button type="button" class="btn" id="nextCardBtn">Sonraki Kart →</button>
+          </div>
+        </div>
+      `;
+      document.getElementById("flipCardBtn").addEventListener("click", () => { flashFlipped = !flashFlipped; renderFlashcard(); });
+      document.getElementById("nextCardBtn").addEventListener("click", () => { flashFlipped = false; flashIndex = (flashIndex + 1) % reviewQueue.length; renderFlashcard(); });
+    }
+
+    /* FİREBASE LİDERLİK & GİRİŞ */
+    let fbAuth = null, fbDb = null;
+    let currentUser = { uid: "guest_local", rumuz: "Tarih Talebesi", puan: 0, isGuest: true };
+
+    function getRank(p) {
+      if (p >= 500) return "Allâme";
+      if (p >= 300) return "Edîb";
+      if (p >= 150) return "Müderris Namzedi";
+      if (p >= 50) return "Araştırmacı";
+      return "Talebe";
+    }
+
+    function updateUserUI() {
+      document.getElementById("headerUserName").textContent = currentUser.rumuz || "Tarih Talebesi";
+      document.getElementById("headerUserRank").textContent = `${getRank(currentUser.puan || 0)} (${currentUser.puan || 0} P)`;
+    }
+
+    async function syncScoreToCloud(pts) {
+      currentUser.puan = (currentUser.puan || 0) + pts;
+      updateUserUI();
+      if (fbDb && currentUser.uid && !currentUser.isGuest) {
+        const rank = getRank(currentUser.puan);
+        try {
+          await fbDb.ref("auzef_kullanicilar/" + currentUser.uid).update({ rumuz: currentUser.rumuz, puan: currentUser.puan, rutbe: rank, guncelleme: Date.now() });
+          await fbDb.ref("auzef_liderlik/" + currentUser.uid).set({ rumuz: currentUser.rumuz, puan: currentUser.puan, rutbe: rank });
+        } catch (e) {}
+      }
+      renderLeaderboardFallback();
+    }
+
+    function renderLeaderboardRows(rows) {
+      const box = document.getElementById("leaderboardList");
+      if (!rows || !rows.length) {
+        box.innerHTML = `<div style="font-size:0.82rem;color:var(--text-muted);">Henüz kayıtlı puan bulunmuyor.</div>`;
+        return;
+      }
+      box.innerHTML = rows.map((r, i) => `
+        <div class="lb-row ${i === 0 ? "top-1" : ""}">
+          <div><strong>#${i + 1} ${escapeHtml(r.rumuz)}</strong> <span style="font-size:0.75rem;color:var(--crimson);font-weight:600;">(${escapeHtml(r.rutbe || getRank(r.puan || 0))})</span></div>
+          <strong style="color:var(--slate);">${r.puan || 0} P</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderLeaderboardFallback() {
+      if (fbDb) return;
+      renderLeaderboardRows([
+        { rumuz: currentUser.rumuz, puan: currentUser.puan || 0, rutbe: getRank(currentUser.puan || 0) },
+        { rumuz: "Tarih_4_Sinif", puan: 280, rutbe: "Araştırmacı" }
+      ].sort((a, b) => b.puan - a.puan));
+    }
+
+    async function applyUser(u) {
+      if (!u) return;
+      const name = u.displayName || (u.email ? u.email.split("@")[0] : "Talebe");
+      currentUser = { uid: u.uid, rumuz: name, puan: currentUser.puan || 0, isGuest: false };
+      updateUserUI();
+      document.getElementById("authModal").classList.remove("open");
+      if (fbDb) {
+        try {
+          const snap = await fbDb.ref("auzef_kullanicilar/" + u.uid).once("value");
+          if (snap.exists()) {
+            const d = snap.val();
+            currentUser.rumuz = d.rumuz || name;
+            currentUser.puan = d.puan || 0;
+          } else {
+            await fbDb.ref("auzef_kullanicilar/" + u.uid).set({ rumuz: currentUser.rumuz, puan: 0, rutbe: "Talebe" });
+          }
+          updateUserUI();
+        } catch (e) {}
+      }
+    }
+
+    function initFirebase() {
+      const badge = document.getElementById("dbStatusBadge");
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        fbAuth = firebase.auth();
+        fbDb = firebase.database();
+        fbAuth.getRedirectResult().then((res) => { if (res && res.user) applyUser(res.user); }).catch(() => {});
+        fbAuth.onAuthStateChanged((u) => { if (u) applyUser(u); });
+        fbDb.ref("auzef_liderlik").orderByChild("puan").limitToLast(12).on("value", (snap) => {
+          const arr = [];
+          snap.forEach((c) => arr.push(c.val()));
+          arr.sort((a, b) => (b.puan || 0) - (a.puan || 0));
+          renderLeaderboardRows(arr);
+          badge.textContent = "● Bulut Bağlı";
+        }, () => {
+          badge.textContent = "● Yerel Mod";
+          fbDb = null;
+          renderLeaderboardFallback();
+        });
+      } catch (e) {
+        badge.textContent = "● Yerel Mod";
+        fbDb = null;
+        renderLeaderboardFallback();
+      }
+    }
+
+    function toEmail(r) {
+      return (r.trim().toLowerCase().replace(/[^a-z0-9_]/g, "") || "talebe") + "@auzef-tarih.local";
+    }
+
+    document.getElementById("loginRumuzBtn").addEventListener("click", async () => {
+      const r = document.getElementById("authRumuz").value.trim();
+      const p = document.getElementById("authPin").value.trim();
+      const msg = document.getElementById("authMsg");
+      if (!r || p.length < 4) { msg.style.color = "var(--danger)"; msg.textContent = "Rumuz ve en az 4 haneli parola girin."; return; }
+      if (!fbAuth) { currentUser = { uid: "loc_" + r, rumuz: r, puan: currentUser.puan || 0, isGuest: false }; updateUserUI(); document.getElementById("authModal").classList.remove("open"); return; }
+      try { const c = await fbAuth.signInWithEmailAndPassword(toEmail(r), p + "_auzef2026"); await applyUser(c.user); }
+      catch (e) { msg.style.color = "var(--danger)"; msg.textContent = "Giriş başarısız; ilk kez geliyorsanız 'Yeni Kayıt Ol'a basın."; }
+    });
+
+    document.getElementById("registerRumuzBtn").addEventListener("click", async () => {
+      const r = document.getElementById("authRumuz").value.trim();
+      const p = document.getElementById("authPin").value.trim();
+      const msg = document.getElementById("authMsg");
+      if (!r || p.length < 4) { msg.style.color = "var(--danger)"; msg.textContent = "Rumuz ve en az 4 haneli parola girin."; return; }
+      if (!fbAuth) { currentUser = { uid: "loc_" + r, rumuz: r, puan: 0, isGuest: false }; updateUserUI(); document.getElementById("authModal").classList.remove("open"); return; }
+      try { const c = await fbAuth.createUserWithEmailAndPassword(toEmail(r), p + "_auzef2026"); await c.user.updateProfile({ displayName: r }); currentUser.rumuz = r; await applyUser(c.user); }
+      catch (e) { msg.style.color = "var(--danger)"; msg.textContent = e.message; }
+    });
+
+    document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+      if (!fbAuth) return;
+      const prov = new firebase.auth.GoogleAuthProvider();
+      prov.setCustomParameters({ prompt: "select_account" });
+      try { const res = await fbAuth.signInWithPopup(prov); if (res && res.user) await applyUser(res.user); }
+      catch (e) { fbAuth.signInWithRedirect(prov); }
+    });
+
+    document.getElementById("guestLoginBtn").addEventListener("click", () => {
+      const r = document.getElementById("authRumuz").value.trim() || "Tarih Talebesi";
+      currentUser = { uid: "guest_local", rumuz: r, puan: currentUser.puan || 0, isGuest: true };
+      updateUserUI();
+      document.getElementById("authModal").classList.remove("open");
+    });
+
+    document.getElementById("userBadgeBtn").addEventListener("click", () => document.getElementById("authModal").classList.add("open"));
+
+    let deferredPrompt = null;
+    window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById("nativeInstallBtn").style.display = "inline-flex"; });
+    document.getElementById("openInstallBtn").addEventListener("click", () => document.getElementById("installModal").classList.add("open"));
+    document.getElementById("closeInstallBtn").addEventListener("click", () => document.getElementById("installModal").classList.remove("open"));
+    document.getElementById("nativeInstallBtn").addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null;
+      document.getElementById("nativeInstallBtn").style.display = "none";
+    });
+
+    /* BAŞLANGIÇ */
+    loadStateFromStorage();
+    initFirebase();
+    updateUserUI();
+    renderCoursesGrid();
+    renderCourseDetail();
+    populateCourseSelects();
+    startExamSession();
+    renderFlashcard();
+  </script>
+</body>
+</html>
