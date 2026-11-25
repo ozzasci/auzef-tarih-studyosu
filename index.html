@@ -23,6 +23,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- PDF.js (Tarayıcı İçi PDF Metin Çıkarma & Ünite Özeti Oluşturma) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <style>
     :root {
@@ -576,6 +578,7 @@
       <button class="tab-btn" data-tab="tab-sinav">📝 Soru Bankası &amp; Akıllı Sınav</button>
       <button class="tab-btn" data-tab="tab-icerik">📥 Ünite Özeti &amp; Soru Yükle (Güz / Bahar)</button>
       <button class="tab-btn" data-tab="tab-tekrar">🃏 Hatalı Sorular &amp; Tekrar Kartları</button>
+      <button class="tab-btn" data-tab="tab-ayarlar">⚙️ Ayarlar</button>
     </nav>
   </div>
 
@@ -672,7 +675,7 @@
           <button type="button" class="pill" data-imode="mode-restore">3. Tam Arşiv Yedeği Yükle / Birleştir</button>
         </div>
 
-        <!-- MOD 1: ÜNİTE ÖZETİ EKLEME -->
+        <!-- MOD 1: ÜNİTE ÖZETİ EKLEME (MANUEL + PDF ÜZERİNDEN ÖZET ÇIKARMA) -->
         <div id="mode-summary">
           <div class="two-col" style="margin-bottom:0.75rem;">
             <div>
@@ -691,14 +694,32 @@
             </div>
           </div>
 
+          <div class="q-box" style="margin-bottom:0.85rem;padding:0.85rem 1rem;">
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.5rem;margin-bottom:0.45rem;">
+              <strong style="color:var(--slate);font-size:0.88rem;">📄 PDF Dosyasından Ünite Özeti &amp; Kavram Çıkar</strong>
+              <span id="pdfExtractStatus" style="font-size:0.78rem;font-weight:700;color:var(--crimson);"></span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+              <input type="file" id="sumPdfFileInput" accept=".pdf,application/pdf" style="flex:1;min-width:210px;padding:0.42rem;" />
+              <select id="pdfExtractMode" style="width:auto;min-width:185px;">
+                <option value="smart_summary">Akıllı Özet + Kavramları Çıkar</option>
+                <option value="full_text">PDF Metninin Tamamını Aktar</option>
+              </select>
+              <button type="button" class="btn btn-gold" id="extractPdfSummaryBtn">⚡ PDF'den Özeti Doldur</button>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.35rem;">
+              Ders PDF'inizi seçtiğinizde metin tarayıcıda çözümlenir; başlık, özet alanı ve anahtar kavramlar otomatik doldurulur (kaydetmeden önce düzenleyebilirsiniz).
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="sumTitleInput">Ünite Başlığı:</label>
             <input type="text" id="sumTitleInput" placeholder="Örn: 8. Ünite — Sultan Abdülaziz Dönemi Islahatları ve Dış Politika" />
           </div>
 
           <div class="form-group">
-            <label for="sumBodyInput">Ünite Çalışma Özeti (NotebookLM veya Ders PDF Notu):</label>
-            <textarea id="sumBodyInput" rows="6" placeholder="Ünitenin özet metnini, önemli tarihleri ve sınavda çıkabilecek kilit bilgileri buraya yapıştırın..."></textarea>
+            <label for="sumBodyInput">Ünite Çalışma Özeti (PDF'den Çıkarılan veya Elle Yazılan Not):</label>
+            <textarea id="sumBodyInput" rows="7" placeholder="PDF yükleyerek otomatik doldurabilir veya ünitenin özet metnini buraya yapıştırabilirsiniz..."></textarea>
           </div>
 
           <div class="form-group">
@@ -766,6 +787,62 @@
           <span class="badge" id="reviewCountBadge">0 Kart</span>
         </div>
         <div id="flashcardArea"></div>
+      </div>
+    </section>
+
+    <!-- 5. AYARLAR & VERİ SIFIRLAMA -->
+    <section class="panel" id="tab-ayarlar">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">⚙️ Uygulama Ayarları &amp; Arşiv Yönetimi</h2>
+          <span class="badge" id="settingsArchiveSummary">0 Soru · 0 Ünite Özeti</span>
+        </div>
+
+        <div class="two-col" style="margin-bottom:1rem;">
+          <div class="q-box" style="margin:0;">
+            <strong style="color:var(--slate);display:block;margin-bottom:0.35rem;">📌 Uygulama Hakkında</strong>
+            <div style="font-size:0.85rem;color:var(--text-main);line-height:1.65;">
+              <div><strong>Uygulama:</strong> AUZEF Tarih 4. Sınıf Çalışma Stüdyosu</div>
+              <div><strong>Hazırlayan:</strong> Oğuz Bulut</div>
+              <div><strong>Firebase Projesi:</strong> auzef-tarih-studyosu</div>
+              <div><strong>Müfredat:</strong> Güz &amp; Bahar Dönemi (12 Ders)</div>
+            </div>
+          </div>
+
+          <div class="q-box" style="margin:0;">
+            <strong style="color:var(--slate);display:block;margin-bottom:0.35rem;">🎛 Çalışma &amp; Görünüm Ayarları</strong>
+            <div class="form-group" style="margin-bottom:0.5rem;">
+              <label for="defaultTermSetting">Varsayılan Dönem:</label>
+              <select id="defaultTermSetting">
+                <option value="GUZ">Güz Dönemi (6 Ders)</option>
+                <option value="BAHAR">Bahar Dönemi (6 Ders)</option>
+                <option value="ALL">Tüm Dersler (12 Ders)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label for="defaultExamCountSetting">Varsayılan Soru Adedi:</label>
+              <select id="defaultExamCountSetting">
+                <option value="ALL">Tüm Sorular (Eksiksiz)</option>
+                <option value="10">10 Soru</option>
+                <option value="20">20 Soru</option>
+                <option value="5">5 Soru</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-explain-box" style="border-left-color:var(--danger);background:#fff8f8;">
+          <strong style="color:var(--danger);display:block;margin-bottom:0.25rem;">🗑️ Tüm Ünite Özetlerini ve Soruları Sil</strong>
+          <p style="font-size:0.84rem;color:var(--text-main);margin-bottom:0.65rem;">
+            Bu düğmeye bastığınızda kayıtlı <strong>tüm ünite özetleri</strong> ve <strong>tüm sorular</strong> (tarayıcıdaki ve bağlıysa buluttaki içerik kayıtları) tek seferde temizlenir. İsterseniz silmeden önce üstteki veya İçe Aktar sekmesindeki yedekleme seçeneğini kullanabilirsiniz.
+          </p>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+            <button type="button" class="btn" id="clearAllSummariesAndQuestionsBtn" style="background:var(--danger);color:#ffffff;border-color:var(--danger);font-weight:700;">
+              🗑️ Tüm Özetleri ve Soruları Sil
+            </button>
+            <span id="settingsActionStatus" style="font-size:0.84rem;font-weight:700;"></span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -917,7 +994,10 @@
     }
 
     function updateArchiveCounters() {
-      document.getElementById("bankTotalBadge").textContent = `${questionsBank.length} Soru · ${unitSummaries.length} Ünite Özeti`;
+      const label = `${questionsBank.length} Soru · ${unitSummaries.length} Ünite Özeti`;
+      document.getElementById("bankTotalBadge").textContent = label;
+      const setSumEl = document.getElementById("settingsArchiveSummary");
+      if (setSumEl) setSumEl.textContent = label;
       document.getElementById("reviewCountBadge").textContent = `${reviewQueue.length} Kart`;
     }
 
@@ -1174,6 +1254,151 @@
       statusEl.style.color = "var(--success)";
       statusEl.textContent = `✓ ${cObj.name} (${unit}. Ünite) özeti kaydedildi!`;
     });
+
+    /* PDF ÜZERİNDEN ÜNİTE ÖZETİ & ANAHTAR KAVRAM ÇIKARMA */
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+
+    function summarizeExtractedPdfText(fullText, mode) {
+      const cleaned = fullText
+        .replace(/\r/g, "\n")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+
+      if (mode === "full_text") {
+        return cleaned;
+      }
+
+      // Cümlelere ayır ve tarihsel/kavramsal yoğunluğu yüksek cümlelerden yapılandırılmış özet oluştur
+      const rawSentences = cleaned
+        .replace(/\n+/g, " ")
+        .split(/(?<=[.!?])\s+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length >= 35 && s.length <= 420);
+
+      if (rawSentences.length <= 12) {
+        return rawSentences.join("\n• ");
+      }
+
+      const keySignals = [
+        "17", "18", "19", "20", "antlaşma", "ferman", "kanun", "savaş", "meclis",
+        "padişah", "sultan", "dönem", "nedeni", "sonuc", "amaç", "ilk", "kurul",
+        "ıslahat", "tanzimat", "meşrutiyet", "kongre", "cemiyet", "devlet", "osmanlı"
+      ];
+
+      const scored = rawSentences.map((sent, idx) => {
+        const low = sent.toLocaleLowerCase("tr-TR");
+        let score = 0;
+        if (idx < 3) score += 3; // Giriş cümleleri
+        keySignals.forEach((kw) => { if (low.includes(kw)) score += 1.5; });
+        if (/\b1[789]\d{2}\b/.test(sent)) score += 2.5; // Tarih içeren cümleler
+        return { sent, idx, score };
+      });
+
+      const topCount = Math.min(22, Math.max(10, Math.ceil(rawSentences.length * 0.28)));
+      const selected = scored
+        .sort((a, b) => b.score - a.score)
+        .slice(0, topCount)
+        .sort((a, b) => a.idx - b.idx)
+        .map((x) => "• " + x.sent);
+
+      return selected.join("\n");
+    }
+
+    function extractKeyConceptsFromText(fullText) {
+      // Özel isimleri, tamlamaları ve tarihsel kavramları tespit et
+      const matches = fullText.match(/\b[A-ZÇĞİÖŞÜ][a-zçğıöşüâîû]+(?:\s+[A-ZÇĞİÖŞÜ][a-zçğıöşüâîû]+){0,2}\b/g) || [];
+      const stopWords = new Set([
+        "Bu", "Bir", "Ve", "İle", "İçin", "Olarak", "Ancak", "Fakat", "Ayrıca", "Buna",
+        "Göre", "Sonra", "Önce", "Kadar", "Daha", "Çok", "Her", "Tüm", "Bazı", "Ünite",
+        "Bölüm", "Sayfa", "Tarihi", "Osmanlı", "Devleti", "Türkiye", "İstanbul", "Ankara"
+      ]);
+      const freq = {};
+      matches.forEach((m) => {
+        const clean = m.trim();
+        if (clean.length < 4 || stopWords.has(clean)) return;
+        freq[clean] = (freq[clean] || 0) + 1;
+      });
+      return Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 12)
+        .map(([k]) => k);
+    }
+
+    async function processPdfForUnitSummary(file) {
+      const statusEl = document.getElementById("pdfExtractStatus");
+      if (!file) return;
+      if (!window.pdfjsLib) {
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "PDF kütüphanesi yüklenemedi, internet bağlantınızı kontrol edin.";
+        return;
+      }
+
+      statusEl.style.color = "var(--slate)";
+      statusEl.textContent = "⏳ PDF okunuyor...";
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let combinedText = "";
+
+        for (let p = 1; p <= pdfDoc.numPages; p++) {
+          statusEl.textContent = `⏳ Sayfa okunuyor: ${p} / ${pdfDoc.numPages}...`;
+          const page = await pdfDoc.getPage(p);
+          const content = await page.getTextContent();
+          const pageStr = content.items.map((it) => it.str).join(" ");
+          combinedText += pageStr + "\n\n";
+        }
+
+        if (!combinedText.trim()) {
+          statusEl.style.color = "var(--danger)";
+          statusEl.textContent = "PDF içinde seçilebilir metin bulunamadı (taranmış görsel PDF olabilir).";
+          return;
+        }
+
+        const mode = document.getElementById("pdfExtractMode").value;
+        const unitNo = document.getElementById("sumUnitSelect").value || "1";
+        const baseName = file.name.replace(/\.pdf$/i, "").replace(/[_-]+/g, " ").trim();
+
+        const titleInput = document.getElementById("sumTitleInput");
+        if (!titleInput.value.trim()) {
+          titleInput.value = `${unitNo}. Ünite — ${baseName}`;
+        }
+
+        document.getElementById("sumBodyInput").value = summarizeExtractedPdfText(combinedText, mode);
+
+        const concepts = extractKeyConceptsFromText(combinedText);
+        if (concepts.length && !document.getElementById("sumConceptsInput").value.trim()) {
+          document.getElementById("sumConceptsInput").value = concepts.join(", ");
+        }
+
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = `✓ ${pdfDoc.numPages} sayfa işlendi! Özet ve kavramlar aşağıya aktarıldı.`;
+      } catch (err) {
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "PDF okuma hatası: " + err.message;
+      }
+    }
+
+    document.getElementById("sumPdfFileInput").addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (f) processPdfForUnitSummary(f);
+    });
+
+    document.getElementById("extractPdfSummaryBtn").addEventListener("click", () => {
+      const f = document.getElementById("sumPdfFileInput").files && document.getElementById("sumPdfFileInput").files[0];
+      if (!f) {
+        const statusEl = document.getElementById("pdfExtractStatus");
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "Lütfen önce bir PDF dosyası seçin.";
+        return;
+      }
+      processPdfForUnitSummary(f);
+    });
+
 
     /* EVRENSEL JSON SORU & KART ÇÖZÜMLEYİCİ (TÜM ŞEMALARI EKSİLTMEYECEK ŞEKİLDE DESTEKLER) */
     function inferCourseIdFromMeta(dersAdi, rawCid, fallbackCid) {
@@ -1794,6 +2019,85 @@
       document.getElementById("nativeInstallBtn").style.display = "none";
     });
 
+
+    /* AYARLAR & TÜM ÖZET/SORULARI TEK TUŞLA SİLME */
+    function initSettingsPanel() {
+      const termSel = document.getElementById("defaultTermSetting");
+      const cntSel = document.getElementById("defaultExamCountSetting");
+      const statusEl = document.getElementById("settingsActionStatus");
+
+      try {
+        const savedTerm = localStorage.getItem("auzef_tarih_pref_term");
+        if (savedTerm) {
+          termSel.value = savedTerm;
+          activeTerm = savedTerm;
+          document.querySelectorAll("#termFilterRow .pill").forEach((p) => {
+            p.classList.toggle("active", p.dataset.term === savedTerm);
+          });
+          renderCoursesGrid();
+          renderCourseDetail();
+        }
+        const savedCnt = localStorage.getItem("auzef_tarih_pref_cnt");
+        if (savedCnt) {
+          cntSel.value = savedCnt;
+          document.getElementById("examCountSelect").value = savedCnt;
+        }
+      } catch (e) {}
+
+      termSel.addEventListener("change", () => {
+        activeTerm = termSel.value;
+        try { localStorage.setItem("auzef_tarih_pref_term", activeTerm); } catch (e) {}
+        document.querySelectorAll("#termFilterRow .pill").forEach((p) => {
+          p.classList.toggle("active", p.dataset.term === activeTerm);
+        });
+        renderCoursesGrid();
+        renderCourseDetail();
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = "✓ Dönem ayarı kaydedildi.";
+      });
+
+      cntSel.addEventListener("change", () => {
+        document.getElementById("examCountSelect").value = cntSel.value;
+        try { localStorage.setItem("auzef_tarih_pref_cnt", cntSel.value); } catch (e) {}
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = "✓ Soru adedi ayarı kaydedildi.";
+      });
+
+      document.getElementById("clearAllSummariesAndQuestionsBtn").addEventListener("click", async () => {
+        const ok = window.confirm("Tüm ünitelerle ilgili tüm özetler ve tüm sorular silinecek. Emin misiniz?");
+        if (!ok) return;
+
+        unitSummaries = [];
+        questionsBank = [];
+        currentExamList = [];
+        examIndex = 0;
+
+        try {
+          localStorage.setItem("auzef_tarih_summaries_v2", JSON.stringify([]));
+          localStorage.setItem("auzef_tarih_bank_v2", JSON.stringify([]));
+        } catch (e) {}
+
+        if (fbDb && currentUser && currentUser.uid && !currentUser.isGuest) {
+          try {
+            await fbDb.ref("auzef_icerikler/" + currentUser.uid).set({
+              summaries: [],
+              customQuestions: [],
+              updatedAt: Date.now()
+            });
+          } catch (e) {}
+        }
+
+        updateArchiveCounters();
+        renderCoursesGrid();
+        renderCourseDetail();
+        populateAllSelects();
+        startExamSession();
+
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "✓ Tüm ünite özetleri ve sorular silindi.";
+      });
+    }
+
     /* BAŞLANGIÇ */
     loadStateFromStorage();
     initFirebase();
@@ -1803,6 +2107,7 @@
     populateAllSelects();
     startExamSession();
     renderFlashcard();
+    initSettingsPanel();
   </script>
 </body>
 </html>
