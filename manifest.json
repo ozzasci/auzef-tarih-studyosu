@@ -1,7 +1,7 @@
 {
   "name": "AUZEF Tarih 4. Sınıf Çalışma Stüdyosu — Oğuz Bulut",
   "short_name": "AUZEF Tarih",
-  "description": "İstanbul Üniversitesi AUZEF Tarih 4. Sınıf Güz ve Bahar Dönemi Dersleri, JSON Soru Bankası, Akıllı Açıklama & Tekrar Stüdyosu | Oğuz Bulut",
+  "description": "İstanbul Üniversitesi AUZEF Tarih 4. Sınıf Güz ve Bahar Dönemi Dersleri, Ünite Özetleri, JSON Soru Bankası ve Akıllı Tekrar | Oğuz Bulut",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
