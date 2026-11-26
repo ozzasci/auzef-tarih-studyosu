@@ -1,0 +1,26 @@
+AUZEF TARİH 4. SINIF ÇALIŞMA STÜDYOSU — KULLANICI REHBERİ
+
+1. DOSYALARI HAZIRLAMA
+- İndirdiğiniz paketi bir klasöre çıkarın.
+- Uygulama dosyaları ve soru bankası (.json) dosyasının aynı klasörde bulunduğundan emin olun.
+
+2. UYGULAMAYI AÇMA VE TELEFONA EKLEME
+- Bilgisayarda açmak için uygulama dosyasını tarayıcıda açın.
+- Android (Chrome): Sağ üstteki menüden (⋮) "Uygulamayı yükle" veya "Ana ekrana ekle" seçeneğine dokunun (veya "📲 Telefona Yükle" düğmesini kullanın).
+- iPhone / iPad (Safari): Alt menüdeki "Paylaş" simgesine dokunup "Ana Ekrana Ekle" seçeneğini seçin.
+
+3. GİRİŞ YAPMA
+- Açılan giriş ekranında Rumuz ve Parola/PIN ile giriş yapın ya da "Yeni Kayıt Ol" ile hesap oluşturun.
+- İsterseniz Google hesabı ile giriş yapabilir veya "Konuk Olarak Devam Et" seçeneğini kullanabilirsiniz.
+
+4. SORU BANKASI YÜKLEME
+- Üst menüden "📥 Ünite Özeti & Soru Yükle (Güz / Bahar)" sekmesine girin.
+- "2. JSON Soru Bankası Yükle (Eksiksiz)" seçeneğine tıklayın.
+- Dönemi ve Hedef Dersi seçin.
+- "JSON Dosyası Seç (.json)" alanından soru dosyanızı yükleyin (veya içeriğini metin kutusuna yapıştırın).
+- "✓ Tüm Soruları Eksiksiz Aktar" düğmesine basarak soruları aktarın.
+
+5. SINAV VE TEKRAR
+- "📝 Soru Bankası & Akıllı Sınav" sekmesinden ders, ünite ve soru sayısını seçip "Başlat" düğmesine basarak sınava başlayabilirsiniz.
+- Yanlış yaptığınız veya işaretlediğiniz sorular "🃏 Hatalı Sorular & Tekrar Kartları" sekmesinde toplanır.
+- Çalışmalarınızı yedeklemek için "💾 Tüm Arşivi Yedekle (.json)" düğmesini kullanabilirsiniz.

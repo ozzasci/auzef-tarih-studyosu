@@ -1001,31 +1001,54 @@
       document.getElementById("reviewCountBadge").textContent = `${reviewQueue.length} Kart`;
     }
 
-    function loadStateFromStorage() {
-      try {
-        const rawBank = localStorage.getItem("auzef_tarih_bank_v2");
-        if (rawBank) {
-          const parsed = JSON.parse(rawBank);
-          if (Array.isArray(parsed) && parsed.length) questionsBank = parsed;
-        }
-      } catch (e) {}
-      if (!questionsBank.length) {
-        questionsBank = [...DEFAULT_QUESTIONS];
-        saveBankToStorage(false);
+   async function loadExternalQuestionsJson(url = "./soru.json") {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return Array.isArray(data) ? data : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function loadStateFromStorage() {
+  let hasSavedBank = false;
+
+  try {
+    const rawBank = localStorage.getItem("auzef_tarih_bank_v2");
+    if (rawBank) {
+      const parsed = JSON.parse(rawBank);
+      if (Array.isArray(parsed) && parsed.length) {
+        questionsBank = parsed;
+        hasSavedBank = true;
       }
-
-      try {
-        const rawSums = localStorage.getItem("auzef_tarih_summaries_v2");
-        if (rawSums) unitSummaries = JSON.parse(rawSums) || [];
-      } catch (e) {}
-
-      try {
-        const rawRev = localStorage.getItem("auzef_tarih_review_v2");
-        if (rawRev) reviewQueue = JSON.parse(rawRev) || [];
-      } catch (e) {}
-
-      updateArchiveCounters();
     }
+  } catch (e) {}
+
+  if (!hasSavedBank) {
+    const externalQuestions = await loadExternalQuestionsJson("./soru.json");
+    if (externalQuestions && externalQuestions.length) {
+      questionsBank = externalQuestions;
+      saveBankToStorage(false);
+    } else {
+      questionsBank = [...DEFAULT_QUESTIONS];
+      saveBankToStorage(false);
+    }
+  }
+
+  try {
+    const rawSums = localStorage.getItem("auzef_tarih_summaries_v2");
+    if (rawSums) unitSummaries = JSON.parse(rawSums) || [];
+  } catch (e) {}
+
+  try {
+    const rawRev = localStorage.getItem("auzef_tarih_review_v2");
+    if (rawRev) reviewQueue = JSON.parse(rawRev) || [];
+  } catch (e) {}
+
+  updateArchiveCounters();
+}
 
     function saveBankToStorage(syncCloud = true) {
       try { localStorage.setItem("auzef_tarih_bank_v2", JSON.stringify(questionsBank)); } catch (e) {}
@@ -2099,15 +2122,17 @@
     }
 
     /* BAŞLANGIÇ */
-    loadStateFromStorage();
-    initFirebase();
-    updateUserUI();
-    renderCoursesGrid();
-    renderCourseDetail();
-    populateAllSelects();
-    startExamSession();
-    renderFlashcard();
-    initSettingsPanel();
+   (async function initApp() {
+  await loadStateFromStorage();
+  initFirebase();
+  updateUserUI();
+  renderCoursesGrid();
+  renderCourseDetail();
+  populateAllSelects();
+  startExamSession();
+  renderFlashcard();
+  initSettingsPanel();
+})();
   </script>
 </body>
 </html>
